@@ -29,7 +29,10 @@ im = imread(test_image);
 % load the precomputed 2D pose derived by Convolutional Pose Machines,
 % other 2D pose estimation methods is applicable, format the 2D pose in the
 % definition described above
-load('0371.mat');
+load('imgs/0371.mat');
+
+% masking some joints
+mask = [1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 1, 0, 0]; % do not care legs at matching
 
 %{
 % get image size
@@ -58,7 +61,7 @@ prediction(9,2) = prediction(9,2) - 20;
 prediction(12,2) = prediction(12,2) - 20;
 
 %% extract the nearest neighbor 
-[j_p] = NN_pose(s1_s9_2d_n,s1_s9_3d,prediction);
+[j_p] = NN_pose(s1_s9_2d_n,s1_s9_3d,prediction,mask);
 % [j_p] = kNN_pose_procrus(s1_s9_2d_n,s1_s9_3d,prediction, 10);
 
 % compute the scale between pixel and real world to recover real size of
@@ -85,11 +88,11 @@ A = [x(:) y(:) z(:)];
 [n,v,m,aved]=plane_fit(A);
 
 % draw the prediction on the input image
-vis_2d(prediction);
+vis_2d(prediction, mask);
 
 % draw the 3D pose
 subplot(1,3,3);
-vis_3d(prediction);
+vis_3d(prediction, mask);
 
 % draw the ground plane
 planeplot(A,n,m)
